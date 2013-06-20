@@ -1,3 +1,4 @@
+
 package com.gameprogblog.engine;
 
 import java.awt.Graphics2D;
@@ -6,7 +7,8 @@ import java.awt.geom.AffineTransform;
 import com.gameprogblog.engine.core.Bound2;
 import com.gameprogblog.engine.core.Vector2;
 
-public class Camera 
+
+public class Camera
 {
 
 	public final Bound2 extents = new Bound2();
@@ -18,35 +20,36 @@ public class Camera
 	public boolean containedInWorld = false;
 	private final Vector2 lastCenter = new Vector2();
 	public final Vector2 actualCenter = new Vector2();
+
 	// TODO rotation
 
-	public Camera(int width, int height)
+	public Camera( int width, int height )
 	{
 		extents.left = extents.right = center.x = width * 0.5f;
 		extents.top = extents.bottom = center.y = height * 0.5f;
 	}
-	
+
 	public void update()
 	{
 		lastCenter.set( center );
 	}
-	
+
 	public void draw( GameState state, Graphics2D gr )
 	{
 		actualCenter.x = (center.x - lastCenter.x) * state.interpolate + lastCenter.x;
 		actualCenter.y = (center.y - lastCenter.y) * state.interpolate + lastCenter.y;
-		
+
 		updateBounds();
-		
+
 		transform.setToIdentity();
 		// TODO rotation
 		transform.scale( scale.x, scale.y );
 		transform.translate( -actualCenter.x, -actualCenter.y );
 		transform.translate( extents.left, extents.top );
-		
+
 		gr.setTransform( transform );
 	}
-	
+
 	public void updateBounds()
 	{
 		bounds.left = (actualCenter.x - extents.left) * scale.x;
@@ -55,36 +58,36 @@ public class Camera
 		bounds.bottom = (actualCenter.y + extents.bottom) * scale.y;
 
 		// TODO rotation
-		
-		if ( containedInWorld )
+
+		if (containedInWorld)
 		{
 			float dy = 0.0f;
 			float dx = 0.0f;
-			
-			if ( bounds.top < world.top )
+
+			if (bounds.top < world.top)
 			{
 				dy = world.top - bounds.top;
 			}
-			
-			if ( bounds.bottom > world.bottom )
+
+			if (bounds.bottom > world.bottom)
 			{
 				dy = world.bottom - bounds.bottom;
 			}
-			
-			if ( bounds.left < world.left )
+
+			if (bounds.left < world.left)
 			{
 				dx = world.left - bounds.left;
 			}
-			
-			if ( bounds.right > world.right )
+
+			if (bounds.right > world.right)
 			{
 				dx = world.right - bounds.right;
 			}
-			
+
 			actualCenter.x += dx * scale.x;
 			actualCenter.y += dy * scale.y;
 			bounds.translate( dx, dy );
 		}
 	}
-	
+
 }

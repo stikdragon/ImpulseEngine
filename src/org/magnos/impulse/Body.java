@@ -19,7 +19,7 @@ public class Body
 	public Body( Shape shape, int x, int y )
 	{
 		this.shape = shape;
-		
+
 		position.set( x, y );
 		velocity.set( 0, 0 );
 		angularVelocity = 0;

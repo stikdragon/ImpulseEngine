@@ -1,3 +1,4 @@
+
 package com.gameprogblog.engine.input;
 
 import java.awt.MouseInfo;
@@ -11,72 +12,73 @@ import javax.swing.event.MouseInputListener;
 
 import com.gameprogblog.engine.Game;
 
+
 /**
  * Contains the current mouse and keyboard input state as well as queues of
- * mouse and keyboard events that have occurred since the last 
+ * mouse and keyboard events that have occurred since the last
  * {@link Game#input(GameInput)} was invoked.
  * 
  * @author Philip Diffenderfer
- *
+ * 
  */
 public class GameInput implements KeyListener, MouseInputListener
 {
 
 	public int keyDownCount, keyUpCount;
-	public boolean[] keyDown = new boolean[ 256 ];
-	public boolean[] keyUp = new boolean[ 256 ];
+	public boolean[] keyDown = new boolean[256];
+	public boolean[] keyUp = new boolean[256];
 	public boolean keyEventsQueue = false;
 	public Queue<GameKeyEvent> keyEvents = new ConcurrentLinkedQueue<GameKeyEvent>();
 
 	public int mouseX, mouseY, mouseDownCount, mouseUpCount;
-	public boolean[] mouseDown = new boolean[ MouseInfo.getNumberOfButtons() ];
-	public boolean[] mouseUp = new boolean[ MouseInfo.getNumberOfButtons() ];
+	public boolean[] mouseDown = new boolean[MouseInfo.getNumberOfButtons()];
+	public boolean[] mouseUp = new boolean[MouseInfo.getNumberOfButtons()];
 	public boolean mouseInside = true;
 	public boolean mouseDragging = false;
 	public boolean mouseMoving = false;
 	public boolean mouseEventsQueue = false;
 	public Queue<GameMouseEvent> mouseEvents = new ConcurrentLinkedQueue<GameMouseEvent>();
-	
+
 	public void clear()
 	{
 		keyDownCount = 0;
 		keyUpCount = 0;
 		keyEvents.clear();
 
-		for ( int i = 0; i < keyUp.length; i++ )
+		for (int i = 0; i < keyUp.length; i++)
 		{
 			keyUp[i] = false;
 		}
-		
+
 		mouseDownCount = 0;
 		mouseUpCount = 0;
 		mouseDragging = false;
 		mouseMoving = false;
 		mouseEvents.clear();
-		
-		for ( int i = 0; i < mouseUp.length; i++ )
+
+		for (int i = 0; i < mouseUp.length; i++)
 		{
 			mouseUp[i] = false;
 		}
 	}
-	
+
 	@Override
 	public void keyTyped( KeyEvent e )
 	{
 		if (keyEventsQueue)
 		{
-			keyEvents.offer( new GameKeyEvent( GameKeyType.Type, e ) );	
+			keyEvents.offer( new GameKeyEvent( GameKeyType.Type, e ) );
 		}
 	}
 
 	@Override
 	public void keyPressed( KeyEvent e )
 	{
-		if ( !keyDown[ e.getKeyCode() ] )
+		if (!keyDown[e.getKeyCode()])
 		{
-			keyDown[ e.getKeyCode() ] = true;
+			keyDown[e.getKeyCode()] = true;
 			keyDownCount++;
-			
+
 			if (keyEventsQueue)
 			{
 				keyEvents.offer( new GameKeyEvent( GameKeyType.Down, e ) );
@@ -87,10 +89,10 @@ public class GameInput implements KeyListener, MouseInputListener
 	@Override
 	public void keyReleased( KeyEvent e )
 	{
-		keyDown[ e.getKeyCode() ] = false;
-		keyUp[ e.getKeyCode() ] = true;
+		keyDown[e.getKeyCode()] = false;
+		keyUp[e.getKeyCode()] = true;
 		keyUpCount++;
-		
+
 		if (keyEventsQueue)
 		{
 			keyEvents.offer( new GameKeyEvent( GameKeyType.Up, e ) );
@@ -118,16 +120,16 @@ public class GameInput implements KeyListener, MouseInputListener
 	{
 		if (mouseEventsQueue)
 		{
-			mouseEvents.offer( new GameMouseEvent( GameMouseType.Click, e ) );	
+			mouseEvents.offer( new GameMouseEvent( GameMouseType.Click, e ) );
 		}
 	}
 
 	@Override
 	public void mousePressed( MouseEvent e )
 	{
-		mouseDown[ e.getButton() ] = true;
+		mouseDown[e.getButton()] = true;
 		mouseDownCount++;
-		
+
 		if (mouseEventsQueue)
 		{
 			mouseEvents.offer( new GameMouseEvent( GameMouseType.Press, e ) );
@@ -137,10 +139,10 @@ public class GameInput implements KeyListener, MouseInputListener
 	@Override
 	public void mouseReleased( MouseEvent e )
 	{
-		mouseDown[ e.getButton() ] = false;
-		mouseUp[ e.getButton() ] = true;
+		mouseDown[e.getButton()] = false;
+		mouseUp[e.getButton()] = true;
 		mouseUpCount++;
-		
+
 		if (mouseEventsQueue)
 		{
 			mouseEvents.offer( new GameMouseEvent( GameMouseType.Release, e ) );
@@ -151,7 +153,7 @@ public class GameInput implements KeyListener, MouseInputListener
 	public void mouseEntered( MouseEvent e )
 	{
 		mouseInside = true;
-		
+
 		if (mouseEventsQueue)
 		{
 			mouseEvents.offer( new GameMouseEvent( GameMouseType.Enter, e ) );
@@ -162,11 +164,11 @@ public class GameInput implements KeyListener, MouseInputListener
 	public void mouseExited( MouseEvent e )
 	{
 		mouseInside = false;
-		
+
 		if (mouseEventsQueue)
 		{
 			mouseEvents.offer( new GameMouseEvent( GameMouseType.Exit, e ) );
 		}
 	}
-	
+
 }

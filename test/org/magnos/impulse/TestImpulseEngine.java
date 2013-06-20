@@ -40,7 +40,7 @@ public class TestImpulseEngine implements Game
 		impulse = new ImpulseScene( ImpulseMath.DT, 10 );
 
 		Body b = null;
-		
+
 		b = impulse.add( new Circle( 30.0f ), 200, 200 );
 		b.setStatic();
 
@@ -59,12 +59,12 @@ public class TestImpulseEngine implements Game
 		{
 			playing = false;
 		}
-		
+
 		if (input.mouseUp[MouseEvent.BUTTON1])
 		{
 			float r = ImpulseMath.random( 10.0f, 50.0f );
 			int vertCount = ImpulseMath.random( 3, Polygon.MAX_POLY_VERTEX_COUNT );
-			
+
 			Vec2[] verts = Vec2.arrayOf( vertCount );
 			for (int i = 0; i < vertCount; i++)
 			{

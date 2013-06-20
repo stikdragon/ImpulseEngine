@@ -3,6 +3,7 @@ package com.gameprogblog.engine.input;
 
 import java.awt.event.KeyEvent;
 
+
 public class GameKeyEvent
 {
 

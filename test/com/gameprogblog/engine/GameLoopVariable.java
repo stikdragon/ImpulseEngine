@@ -49,7 +49,7 @@ public class GameLoopVariable implements GameLoop
 		{
 			return false;
 		}
-		
+
 		state.draw();
 		scene.draw( state, gr );
 		game.draw( state, gr, scene );

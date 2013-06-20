@@ -66,7 +66,7 @@ public class GameLoopFixed implements GameLoop
 			state.update();
 			scene.update();
 			game.update( state, scene );
-			
+
 			if (!game.isPlaying())
 			{
 				return false;

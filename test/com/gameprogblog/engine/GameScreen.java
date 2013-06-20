@@ -32,35 +32,35 @@ public class GameScreen extends JPanel
 
 	// The graphics object used for drawing.
 	private Graphics2D graphics;
-	
+
 	// The loop that's executed in the game loop.
 	private GameLoop loop;
-	
+
 	// The game that's being played.
 	private Game game;
-	
+
 	// The state of the game.
 	private GameState state;
 
 	// The input of the game.
 	private GameInput input;
-	
+
 	// The scene in the game.
 	private Scene scene;
-	
+
 	/**
 	 * Instantiates a new screen to play a game.
 	 * 
 	 * @param width
-	 * 	The width of the screen in pixels.
+	 *        The width of the screen in pixels.
 	 * @param height
-	 * 	The height of the screen in pixels.
+	 *        The height of the screen in pixels.
 	 * @param antialiasing
-	 * 	True if drawing should be smooth, otherwise false. 
+	 *        True if drawing should be smooth, otherwise false.
 	 * @param loop
-	 * 	The loop implementation to use.
+	 *        The loop implementation to use.
 	 * @param game
-	 * 	The game to play.
+	 *        The game to play.
 	 */
 	public GameScreen( int width, int height, boolean antialiasing, GameLoop loop, Game game )
 	{
@@ -83,38 +83,38 @@ public class GameScreen extends JPanel
 	 */
 	public void start()
 	{
-		input.mouseInside = getParent().contains( MouseInfo.getPointerInfo().getLocation() ); 
-		
+		input.mouseInside = getParent().contains( MouseInfo.getPointerInfo().getLocation() );
+
 		addKeyListener( input );
 		addMouseListener( input );
 		addMouseMotionListener( input );
 
 		resetGraphics();
-		
+
 		game.start( scene );
-		
+
 		loop.onStart( game, state );
-	
-		while ( game.isPlaying() )
+
+		while (game.isPlaying())
 		{
 			// If the loop has called the draw method of the game, render the
 			// graphics to the screen and then reset them for the next frame.
-			if ( loop.onLoop( game, state, input, graphics, scene ) )
+			if (loop.onLoop( game, state, input, graphics, scene ))
 			{
 				renderGraphics( getGraphics() );
 				resetGraphics();
 			}
 		}
-		
+
 		game.destroy();
-		
+
 		System.exit( 0 );
 	}
 
 	@Override
 	public final void paint( Graphics g )
 	{
-		if (g == null || buffer == null )
+		if (g == null || buffer == null)
 		{
 			return;
 		}
@@ -130,7 +130,7 @@ public class GameScreen extends JPanel
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void renderGraphics( Graphics gr )
 	{
 		gr.drawImage( buffer, 0, 0, this );
@@ -144,11 +144,11 @@ public class GameScreen extends JPanel
 	{
 		// Get the graphics of the buffer
 		graphics = (Graphics2D)buffer.getGraphics();
-		
+
 		// Clear the buffer with the background color
 		graphics.setColor( getBackground() );
 		graphics.fillRect( 0, 0, getWidth(), getHeight() );
-		
+
 		// If antialiasing is turned on enable it.
 		if (antialising)
 		{
@@ -171,17 +171,17 @@ public class GameScreen extends JPanel
 		{
 			gameLoop.onStart( game, state );
 		}
-		
+
 		loop = gameLoop;
 	}
-	
+
 	/**
 	 * Shows the given GameScreen in a window with the given title.
 	 * 
 	 * @param gameScreen
-	 * 	The GameScreen to add to the window.
+	 *        The GameScreen to add to the window.
 	 * @param title
-	 * 	The title of the window.
+	 *        The title of the window.
 	 */
 	public static void showWindow( GameScreen gameScreen, String title )
 	{

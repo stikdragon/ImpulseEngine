@@ -53,7 +53,7 @@ public class Bound2
 		top = position.y - extent.top;
 		bottom = position.y + extent.bottom;
 	}
-	
+
 	public void grow( float dx, float dy )
 	{
 		left -= dx;
@@ -61,78 +61,76 @@ public class Bound2
 		top -= dy;
 		bottom += dy;
 	}
-	
-	public void translate(float dx, float dy)
+
+	public void translate( float dx, float dy )
 	{
 		left += dx;
 		right += dx;
 		top += dy;
 		bottom += dy;
 	}
-	
-	public void moveLeft(float newLeft)
+
+	public void moveLeft( float newLeft )
 	{
 		right = newLeft + getWidth();
 		left = newLeft;
 	}
-	
-	public void moveRight(float newRight)
+
+	public void moveRight( float newRight )
 	{
 		left = newRight - getWidth();
 		right = newRight;
 	}
-	
-	public void moveTop(float newTop)
+
+	public void moveTop( float newTop )
 	{
 		bottom = newTop + getHeight();
 		top = newTop;
 	}
-	
-	public void moveBottom(float newBottom)
+
+	public void moveBottom( float newBottom )
 	{
 		top = newBottom - getHeight();
 		bottom = newBottom;
 	}
-	
-	
+
 	public float getWidth()
 	{
-		return ( right - left );
+		return (right - left);
 	}
-	
+
 	public float getHeight()
 	{
-		return ( bottom - top );
+		return (bottom - top);
 	}
-	
+
 	public float cx()
 	{
-		return ( left + right ) * 0.5f;
+		return (left + right) * 0.5f;
 	}
-	
+
 	public float cy()
 	{
-		return ( top + bottom ) * 0.5f;
+		return (top + bottom) * 0.5f;
 	}
-	
-	public float dx(float d)
+
+	public float dx( float d )
 	{
-		return ( right - left ) * d + left;
+		return (right - left) * d + left;
 	}
-	
-	public float dy(float d)
+
+	public float dy( float d )
 	{
-		return ( bottom - top ) * d + top;
+		return (bottom - top) * d + top;
 	}
 
 	public static Bound2 union( Bound2 x, Bound2 y )
 	{
-		return new Bound2( 
-			Math.min( x.left, y.left ), 
-			Math.min( x.top, y.top ), 
-			Math.max( x.right, y.right ), 
-			Math.max( x.bottom, y.bottom ) 
-		);
+		return new Bound2(
+			Math.min( x.left, y.left ),
+			Math.min( x.top, y.top ),
+			Math.max( x.right, y.right ),
+			Math.max( x.bottom, y.bottom ) );
 	}
 
 	@Override
