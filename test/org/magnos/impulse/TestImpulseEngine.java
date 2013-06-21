@@ -80,29 +80,44 @@ public class TestImpulseEngine implements Game
 			playing = false;
 		}
 
-		if (input.mouseUp[MouseEvent.BUTTON1])
+		if (input.keyDown[KeyEvent.VK_SHIFT])
 		{
-			float r = ImpulseMath.random( 10.0f, 50.0f );
-			int vertCount = ImpulseMath.random( 3, Polygon.MAX_POLY_VERTEX_COUNT );
-
-			Vec2[] verts = Vec2.arrayOf( vertCount );
-			for (int i = 0; i < vertCount; i++)
+			if (input.mouseUp[MouseEvent.BUTTON1])
 			{
-				verts[i].set( ImpulseMath.random( -r, r ), ImpulseMath.random( -r, r ) );
+				float hw = ImpulseMath.random( 10.0f, 30.0f );
+				float hh = ImpulseMath.random( 10.0f, 30.0f );
+				
+				Body b = impulse.add( new Polygon( hw, hh ), input.mouseX, input.mouseY );
+				b.setOrient( 0.0f );
 			}
-
-			Body b = impulse.add( new Polygon( verts ), input.mouseX, input.mouseY );
-			b.setOrient( ImpulseMath.random( -ImpulseMath.PI, ImpulseMath.PI ) );
-			b.restitution = 0.2f;
-			b.dynamicFriction = 0.2f;
-			b.staticFriction = 0.4f;
 		}
-		if (input.mouseUp[MouseEvent.BUTTON3])
+		else
 		{
-			float r = ImpulseMath.random( 10.0f, 30.0f );
+			if (input.mouseUp[MouseEvent.BUTTON1])
+			{
+				float r = ImpulseMath.random( 10.0f, 50.0f );
+				int vertCount = ImpulseMath.random( 3, Polygon.MAX_POLY_VERTEX_COUNT );
 
-			impulse.add( new Circle( r ), input.mouseX, input.mouseY );
+				Vec2[] verts = Vec2.arrayOf( vertCount );
+				for (int i = 0; i < vertCount; i++)
+				{
+					verts[i].set( ImpulseMath.random( -r, r ), ImpulseMath.random( -r, r ) );
+				}
+
+				Body b = impulse.add( new Polygon( verts ), input.mouseX, input.mouseY );
+				b.setOrient( ImpulseMath.random( -ImpulseMath.PI, ImpulseMath.PI ) );
+				b.restitution = 0.2f;
+				b.dynamicFriction = 0.2f;
+				b.staticFriction = 0.4f;
+			}
+			if (input.mouseUp[MouseEvent.BUTTON3])
+			{
+				float r = ImpulseMath.random( 10.0f, 30.0f );
+
+				impulse.add( new Circle( r ), input.mouseX, input.mouseY );
+			}
 		}
+	
 	}
 
 	@Override
