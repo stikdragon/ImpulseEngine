@@ -7,7 +7,7 @@ This port is meant to be nearly an exact port, additional comments and functions
 
 This project was created and developed in Eclipse, the formatter is included.
 
-In the test folder, there is a simple game engine that uses Java2D in order to show how the library works (taken from my blog - http://gameprogblog.com). To run the demo download jimpulse-demo.jar and run it.
+In the test folder, there is a simple game engine that uses Java2D in order to show how the library works (taken from my blog - [http://gameprogblog.com](http://gh.magnos.org/?r=http://gameprogblog.com)). To run the demo download jimpulse-demo.jar and run it.
 
 This has been tested with Java 1.6 and 1.7.
 
