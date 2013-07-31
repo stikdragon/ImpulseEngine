@@ -1,3 +1,5 @@
+![Stable](http://i4.photobucket.com/albums/y123/Freaklotr4/stage_stable.png)
+
 Java port of Impulse Engine
 Created by Philip Diffenderfer
 
