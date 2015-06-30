@@ -57,8 +57,8 @@ public class Manifold
 		// Calculate static and dynamic friction
 		// sf = std::sqrt( A->staticFriction * A->staticFriction );
 		// df = std::sqrt( A->dynamicFriction * A->dynamicFriction );
-		sf = (float)StrictMath.sqrt( A.staticFriction * A.staticFriction );
-		df = (float)StrictMath.sqrt( A.dynamicFriction * A.dynamicFriction );
+		sf = (float)StrictMath.sqrt( A.staticFriction * A.staticFriction + B.staticFriction * B.staticFriction);
+		df = (float)StrictMath.sqrt( A.dynamicFriction * A.dynamicFriction + B.dynamicFriction * B.dynamicFriction);
 
 		for (int i = 0; i < contactCount; ++i)
 		{
