@@ -21,30 +21,32 @@
 
 package org.magnos.impulse;
 
-public abstract class Shape
-{
+public abstract class Shape {
 
-	public enum Type
-	{
-		Circle, Poly, Count
+	public enum Type {
+		Circle,
+		Poly,
+		Count
 	}
 
-	public Body body;
-	public float radius;
-	public final Mat2 u = new Mat2();
+	public Body			body;
+	public double		radius;
+	public final Mat2	u	= new Mat2();
 
-	public Shape()
-	{
+	public Shape() {
 	}
 
 	public abstract Shape clone();
 
 	public abstract void initialize();
 
-	public abstract void computeMass( float density );
+	public abstract void computeMass(double density);
 
-	public abstract void setOrient( float radians );
+	public abstract void setOrient(double radians);
 
 	public abstract Type getType();
+
+	public abstract void calcDimensions(AABB box);
+	
 
 }

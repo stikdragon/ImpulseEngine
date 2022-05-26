@@ -24,19 +24,19 @@ package org.magnos.impulse;
 public class Mat2
 {
 
-	public float m00, m01;
-	public float m10, m11;
+	public double m00, m01;
+	public double m10, m11;
 
 	public Mat2()
 	{
 	}
 
-	public Mat2( float radians )
+	public Mat2( double radians )
 	{
 		set( radians );
 	}
 
-	public Mat2( float a, float b, float c, float d )
+	public Mat2( double a, double b, double c, double d )
 	{
 		set( a, b, c, d );
 	}
@@ -44,10 +44,10 @@ public class Mat2
 	/**
 	 * Sets this matrix to a rotation matrix with the given radians.
 	 */
-	public void set( float radians )
+	public void set( double radians )
 	{
-		float c = (float)StrictMath.cos( radians );
-		float s = (float)StrictMath.sin( radians );
+		double c = StrictMath.cos( radians );
+		double s = StrictMath.sin( radians );
 
 		m00 = c;
 		m01 = -s;
@@ -58,7 +58,7 @@ public class Mat2
 	/**
 	 * Sets the values of this matrix.
 	 */
-	public void set( float a, float b, float c, float d )
+	public void set( double a, double b, double c, double d )
 	{
 		m00 = a;
 		m01 = b;
@@ -146,7 +146,7 @@ public class Mat2
 	 */
 	public void transposei()
 	{
-		float t = m01;
+		double t = m01;
 		m01 = m10;
 		m10 = t;
 	}
@@ -198,7 +198,7 @@ public class Mat2
 	/**
 	 * Sets out the to transformation of {x,y} by this matrix.
 	 */
-	public Vec2 mul( float x, float y, Vec2 out )
+	public Vec2 mul( double x, double y, Vec2 out )
 	{
 		out.x = m00 * x + m01 * y;
 		out.y = m10 * x + m11 * y;

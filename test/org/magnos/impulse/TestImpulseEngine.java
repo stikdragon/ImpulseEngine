@@ -50,21 +50,21 @@ public class TestImpulseEngine implements Game
 		GameScreen.showWindow( screen, "Impulse Engine - Java" );
 	}
 
-	public ImpulseScene impulse;
+	public ImpulseScene<Body> impulse;
 	public boolean playing;
-	public float accumulator;
+	public double accumulator;
 
 	@Override
 	public void start( Scene scene )
 	{
-		impulse = new ImpulseScene( ImpulseMath.DT, 10 );
+		impulse = new ImpulseScene<>( ImpulseMath.DT, 10 );
 
-		Body b = null;
-
-		b = impulse.add( new Circle( 30.0f ), 200, 200 );
+		Body b = new Body(impulse,  new Circle( 30.0f ), 200, 200 );
+		impulse.add(b);
 		b.setStatic();
 
-		b = impulse.add( new Polygon( 200.0f, 10.0f ), 240, 300 );
+		b = new Body(impulse,  new Polygon( 200.0f, 10.0f ), 240, 300 );
+		impulse.add(b);
 		b.setStatic();
 		b.setOrient( 0 );
 
@@ -84,10 +84,11 @@ public class TestImpulseEngine implements Game
 		{
 			if (input.mouseUp[MouseEvent.BUTTON1])
 			{
-				float hw = ImpulseMath.random( 10.0f, 30.0f );
-				float hh = ImpulseMath.random( 10.0f, 30.0f );
+				double hw = ImpulseMath.random( 10.0f, 30.0f );
+				double hh = ImpulseMath.random( 10.0f, 30.0f );
 				
-				Body b = impulse.add( new Polygon( hw, hh ), input.mouseX, input.mouseY );
+				Body b = new Body(impulse, new Polygon( hw, hh ), input.mouseX, input.mouseY);
+				impulse.add( b );
 				b.setOrient( 0.0f );
 			}
 		}
@@ -95,7 +96,7 @@ public class TestImpulseEngine implements Game
 		{
 			if (input.mouseUp[MouseEvent.BUTTON1])
 			{
-				float r = ImpulseMath.random( 10.0f, 50.0f );
+				double r = ImpulseMath.random( 10.0f, 50.0f );
 				int vertCount = ImpulseMath.random( 3, Polygon.MAX_POLY_VERTEX_COUNT );
 
 				Vec2[] verts = Vec2.arrayOf( vertCount );
@@ -104,7 +105,8 @@ public class TestImpulseEngine implements Game
 					verts[i].set( ImpulseMath.random( -r, r ), ImpulseMath.random( -r, r ) );
 				}
 
-				Body b = impulse.add( new Polygon( verts ), input.mouseX, input.mouseY );
+				Body b = new Body(impulse, new Polygon( verts ), input.mouseX, input.mouseY );
+				impulse.add(b);
 				b.setOrient( ImpulseMath.random( -ImpulseMath.PI, ImpulseMath.PI ) );
 				b.restitution = 0.2f;
 				b.dynamicFriction = 0.2f;
@@ -112,9 +114,9 @@ public class TestImpulseEngine implements Game
 			}
 			if (input.mouseUp[MouseEvent.BUTTON3])
 			{
-				float r = ImpulseMath.random( 10.0f, 30.0f );
-
-				impulse.add( new Circle( r ), input.mouseX, input.mouseY );
+				double r = ImpulseMath.random( 10.0f, 30.0f );
+				Body b =  new Body(impulse, new Circle( r ), input.mouseX, input.mouseY );
+				impulse.add( b);
 			}
 		}
 	
@@ -142,12 +144,12 @@ public class TestImpulseEngine implements Game
 			{
 				Circle c = (Circle)b.shape;
 
-				float rx = (float)StrictMath.cos( b.orient ) * c.radius;
-				float ry = (float)StrictMath.sin( b.orient ) * c.radius;
+				double rx = (double)StrictMath.cos( b.orient ) * c.radius;
+				double ry = (double)StrictMath.sin( b.orient ) * c.radius;
 
 				gr.setColor( Color.red );
-				gr.draw( new Ellipse2D.Float( b.position.x - c.radius, b.position.y - c.radius, c.radius * 2, c.radius * 2 ) );
-				gr.draw( new Line2D.Float( b.position.x, b.position.y, b.position.x + rx, b.position.y + ry ) );
+				gr.draw( new Ellipse2D.Double( b.position.x - c.radius, b.position.y - c.radius, c.radius * 2, c.radius * 2 ) );
+				gr.draw( new Line2D.Double( b.position.x, b.position.y, b.position.x + rx, b.position.y + ry ) );
 			}
 			else if (b.shape instanceof Polygon)
 			{
@@ -184,7 +186,7 @@ public class TestImpulseEngine implements Game
 				Vec2 v = m.contacts[i];
 				Vec2 n = m.normal;
 
-				gr.draw( new Line2D.Float( v.x, v.y, v.x + n.x * 4.0f, v.y + n.y * 4.0f ) );
+				gr.draw( new Line2D.Double( v.x, v.y, v.x + n.x * 4.0f, v.y + n.y * 4.0f ) );
 			}
 		}
 	}

@@ -21,29 +21,24 @@
 
 package org.magnos.impulse;
 
-public class Circle extends Shape
-{
+public class Circle extends Shape {
 
-	public Circle( float r )
-	{
-		radius = r;
+	public Circle(double d) {
+		radius = d;
 	}
 
 	@Override
-	public Shape clone()
-	{
-		return new Circle( radius );
+	public Shape clone() {
+		return new Circle(radius);
 	}
 
 	@Override
-	public void initialize()
-	{
-		computeMass( 1.0f );
+	public void initialize() {
+		computeMass(1.0f);
 	}
 
 	@Override
-	public void computeMass( float density )
-	{
+	public void computeMass(double density) {
 		body.mass = ImpulseMath.PI * radius * radius * density;
 		body.invMass = (body.mass != 0.0f) ? 1.0f / body.mass : 0.0f;
 		body.inertia = body.mass * radius * radius;
@@ -51,14 +46,20 @@ public class Circle extends Shape
 	}
 
 	@Override
-	public void setOrient( float radians )
-	{
+	public void setOrient(double radians) {
 	}
 
 	@Override
-	public Type getType()
-	{
+	public Type getType() {
 		return Type.Circle;
+	}
+
+	@Override
+	public void calcDimensions(AABB box) {
+		box.x0 = -radius;
+		box.y0 = -radius;
+		box.x1 = radius;
+		box.y1 = radius;
 	}
 
 }

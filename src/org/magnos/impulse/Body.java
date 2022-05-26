@@ -21,31 +21,35 @@
 
 package org.magnos.impulse;
 
-public class Body
-{
+import org.magnos.impulse.SceneGrid.GridCell;
 
-	public final Vec2 position = new Vec2();
-	public final Vec2 velocity = new Vec2();
-	public final Vec2 force = new Vec2();
-	public float angularVelocity;
-	public float torque;
-	public float orient;
-	public float mass, invMass, inertia, invInertia;
-	public float staticFriction;
-	public float dynamicFriction;
-	public float restitution;
-	public final Shape shape;
+public class Body {
 
-	public Body( Shape shape, int x, int y )
-	{
+	public final Vec2				position	= new Vec2();
+	public final Vec2				velocity	= new Vec2();
+	public final Vec2				force		= new Vec2();
+	public double					angularVelocity;
+	public double					torque;
+	public double					orient;
+	public double					mass, invMass, inertia, invInertia;
+	public double					staticFriction;
+	public double					dynamicFriction;
+	public double					restitution;
+	public final Shape				shape;
+	private final ImpulseScene<?>	scene;
+	public GridCell					lastCell	= null;
+	public int						sequence;
+
+	public Body(ImpulseScene<?> scene, Shape shape, double x, double y) {
 		this.shape = shape;
+		this.scene = scene;
 
-		position.set( x, y );
-		velocity.set( 0, 0 );
+		position.set(x, y);
+		velocity.set(0, 0);
 		angularVelocity = 0;
 		torque = 0;
-		orient = ImpulseMath.random( -ImpulseMath.PI, ImpulseMath.PI );
-		force.set( 0, 0 );
+		orient = ImpulseMath.random(-ImpulseMath.PI, ImpulseMath.PI);
+		force.set(0, 0);
 		staticFriction = 0.5f;
 		dynamicFriction = 0.3f;
 		restitution = 0.2f;
@@ -54,33 +58,34 @@ public class Body
 		shape.initialize();
 	}
 
-	public void applyForce( Vec2 f )
-	{
+	public void applyForce(Vec2 f) {
 		// force += f;
-		force.addi( f );
+		force.addi(f);
 	}
 
-	public void applyImpulse( Vec2 impulse, Vec2 contactVector )
-	{
+	public void applyImpulse(Vec2 impulse, Vec2 contactVector) {
 		// velocity += im * impulse;
 		// angularVelocity += iI * Cross( contactVector, impulse );
 
-		velocity.addsi( impulse, invMass );
-		angularVelocity += invInertia * Vec2.cross( contactVector, impulse );
+		velocity.addsi(impulse, invMass);
+		angularVelocity += invInertia * Vec2.cross(contactVector, impulse);
 	}
 
-	public void setStatic()
-	{
+	public void setStatic() {
 		inertia = 0.0f;
 		invInertia = 0.0f;
 		mass = 0.0f;
 		invMass = 0.0f;
 	}
 
-	public void setOrient( float radians )
-	{
+	public void setOrient(double radians) {
 		orient = radians;
-		shape.setOrient( radians );
+		shape.setOrient(radians);
+	}
+
+	public void setPosition(double x, double y) {
+		position.set(x, y);
+		scene.positionUpdated(this);
 	}
 
 }

@@ -22,102 +22,175 @@
 package org.magnos.impulse;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.magnos.impulse.SceneGrid.GridCell;
 
-public class ImpulseScene
-{
+public class ImpulseScene<T extends Body> {
 
-	public float dt;
-	public int iterations;
-	public ArrayList<Body> bodies = new ArrayList<Body>();
-	public ArrayList<Manifold> contacts = new ArrayList<Manifold>();
+	public double		dt;
+	public int			iterations;
+	public List<T>		bodies		= new ArrayList<T>();
+	public ManifoldList	contacts	= new ManifoldList();
+	public Vec2			gravity		= new Vec2(0.0f, 50.0f);
+	private Vec2		tmpv		= new Vec2();
+	private SceneGrid	grid;
+	private AABB		tbox		= new AABB();
+	private int			sequence	= 0;
 
-	public ImpulseScene( float dt, int iterations )
-	{
-		this.dt = dt;
-		this.iterations = iterations;
+	public ImpulseScene(double dt, int iterations) {
+		this(dt, new SceneOptions(iterations));
 	}
 
-	public void step()
-	{
+	public ImpulseScene(double dt, SceneOptions opts) {
+		this.dt = dt;
+		this.iterations = opts.getIterations();
+		if (opts.getGridBounds() != null)
+			createPartitioningGrid(opts.getGridBounds(), opts.getGridDivisions());
+	}
+
+	/**
+	 * if you set one of these then you are constraining your simulation to the
+	 * bounds, anything that would fall outside of it will cease to take part in
+	 * collisions. additionally you cannot have bodies that are bigger than the
+	 * grid size
+	 * 
+	 * @param bounds
+	 * @param divisions
+	 */
+	private void createPartitioningGrid(AABB bounds, int divisions) {
+		grid = new SceneGrid(this);
+		grid.init(bounds.getMin(), bounds.getMax(), divisions);
+	}
+
+	public void step() {
 		// Generate new collision info
 		contacts.clear();
-		for (int i = 0; i < bodies.size(); ++i)
-		{
-			Body A = bodies.get( i );
-
-			for (int j = i + 1; j < bodies.size(); ++j)
-			{
-				Body B = bodies.get( j );
-
-				if (A.invMass == 0 && B.invMass == 0)
-				{
+		int[] counter = new int[1];
+		if (grid != null) {
+			//
+			// if we have a grid then we can only worry
+			// about things near each body 
+			//
+			for (T a : bodies) {
+				GridCell c = grid.getCell(a.position);
+				if (c == null)// it's wandered out of range 
 					continue;
-				}
+				grid.forEachNeighbour(c, -1, -1, 1, 1, b -> {
+					if (b.sequence > a.sequence) {
+						if (a.invMass == 0 && b.invMass == 0)
+							return;
+						counter[0]++;
+						Manifold m = contacts.add();
+						m.A = a;
+						m.B = b;
+						m.solve();
 
-				Manifold m = new Manifold( A, B );
-				m.solve();
+						if (m.contactCount == 0)
+							contacts.removeLast();
+					}
+				});
+			}
 
-				if (m.contactCount > 0)
-				{
-					contacts.add( m );
+		} else {
+
+			for (int i = 0; i < bodies.size(); ++i) {
+				T a = bodies.get(i);
+
+				for (int j = i + 1; j < bodies.size(); ++j) {
+					T b = bodies.get(j);
+
+					if (a.invMass == 0 && b.invMass == 0)
+						continue;
+
+					counter[0]++;
+					Manifold m = contacts.add();
+					m.A = a;
+					m.B = b;
+					m.solve();
+
+					if (m.contactCount == 0)
+						contacts.removeLast();
 				}
 			}
 		}
 
 		// Integrate forces
-		for (int i = 0; i < bodies.size(); ++i)
-		{
-			integrateForces( bodies.get( i ), dt );
-		}
+		bodies.forEach(b -> integrateForces(b, dt));
 
 		// Initialize collision
-		for (int i = 0; i < contacts.size(); ++i)
-		{
-			contacts.get( i ).initialize();
-		}
-
+		contacts.forEach(Manifold::initialize);
+		
 		// Solve collisions
 		for (int j = 0; j < iterations; ++j)
-		{
-			for (int i = 0; i < contacts.size(); ++i)
-			{
-				contacts.get( i ).applyImpulse();
+			contacts.forEach(Manifold::applyImpulse);
+
+		//
+		// apply env friction
+		//
+		for (Body b : bodies) {
+			tmpv.set(b.velocity);
+			if (tmpv.lengthSq() > ImpulseMath.EPSILON) {
+				//
+				// work out magnitude of reverse impulse, this is a ratio of the 
+				// speed raised to a power, with a minimum static friction
+				//				
+				double f = Math.max(100, Math.pow(b.velocity.lengthSq() * 0.01, 2.0));
+				tmpv.normalize().muli(dt * -f);
+				if (tmpv.lengthSq() >= b.velocity.lengthSq()) // don't apply such a big impulse that we go backwards
+					b.velocity.set(0, 0);
+				else
+					b.velocity.addi(tmpv);
 			}
 		}
 
 		// Integrate velocities
-		for (int i = 0; i < bodies.size(); ++i)
-		{
-			integrateVelocity( bodies.get( i ), dt );
-		}
+		bodies.forEach(b -> integrateVelocity(b, dt));
 
 		// Correct positions
-		for (int i = 0; i < contacts.size(); ++i)
-		{
-			contacts.get( i ).positionalCorrection();
-		}
+		contacts.forEach(Manifold::positionalCorrection);
+
+		if (grid != null)
+			bodies.forEach(this::updatePartitionPosition);
 
 		// Clear all forces
-		for (int i = 0; i < bodies.size(); ++i)
-		{
-			Body b = bodies.get( i );
-			b.force.set( 0, 0 );
+		for (Body b : bodies) {
+			b.force.set(0, 0);
 			b.torque = 0;
 		}
 	}
 
-	public Body add( Shape shape, int x, int y )
-	{
-		Body b = new Body( shape, x, y );
-		bodies.add( b );
-		return b;
+	private void updatePartitionPosition(Body b) {
+		GridCell cell = grid.getCell(b.position);
+		if (b.lastCell != cell) {
+			if (b.lastCell != null)
+				b.lastCell.bodies.remove(b);
+			if (cell != null)
+				cell.bodies.add(b);
+			b.lastCell = cell;
+		}
 	}
 
-	public void clear()
-	{
+	public void positionUpdated(Body body) {
+		updatePartitionPosition(body);
+	}
+
+	public void add(T b) {
+		if (grid != null) {
+			b.shape.calcDimensions(tbox);
+			if (tbox.getW() > grid.getCellSize().x || tbox.getH() > grid.getCellSize().y)
+				throw new IllegalStateException("There is a partitioning grid assigned, and the given shape would exceed its cell size");
+			updatePartitionPosition(b);
+		}
+		b.sequence = ++sequence;
+		bodies.add(b);
+	}
+
+	public void clear() {
 		contacts.clear();
 		bodies.clear();
+		if (grid != null)
+			grid.clear();
 	}
 
 	// Acceleration
@@ -133,44 +206,53 @@ public class ImpulseScene
 	// x += v * dt
 
 	// see http://www.niksula.hut.fi/~hkankaan/Homepages/gravity.html
-	public void integrateForces( Body b, float dt )
-	{
-//		if(b->im == 0.0f)
-//			return;
-//		b->velocity += (b->force * b->im + gravity) * (dt / 2.0f);
-//		b->angularVelocity += b->torque * b->iI * (dt / 2.0f);
+	public void integrateForces(T b, double dt) {
+		//		if(b->im == 0.0f)
+		//			return;
+		//		b->velocity += (b->force * b->im + gravity) * (dt / 2.0f);
+		//		b->angularVelocity += b->torque * b->iI * (dt / 2.0f);
 
-		if (b.invMass == 0.0f)
-		{
+		if (b.invMass == 0.0f) {
 			return;
 		}
 
-		float dts = dt * 0.5f;
+		double dts = dt * 0.5f;
 
-		b.velocity.addsi( b.force, b.invMass * dts );
-		b.velocity.addsi( ImpulseMath.GRAVITY, dts );
+		b.velocity.addsi(b.force, b.invMass * dts);
+		if (gravity != null)
+			b.velocity.addsi(gravity, dts);
 		b.angularVelocity += b.torque * b.invInertia * dts;
 	}
 
-	public void integrateVelocity( Body b, float dt )
-	{
-//		if(b->im == 0.0f)
-//			return;
-//		b->position += b->velocity * dt;
-//		b->orient += b->angularVelocity * dt;
-//		b->SetOrient( b->orient );
-//		IntegrateForces( b, dt );
+	public void integrateVelocity(T b, double dt) {
+		//		if(b->im == 0.0f)
+		//			return;
+		//		b->position += b->velocity * dt;
+		//		b->orient += b->angularVelocity * dt;
+		//		b->SetOrient( b->orient );
+		//		IntegrateForces( b, dt );
 
-		if (b.invMass == 0.0f)
-		{
+		if (b.invMass == 0.0f) {
 			return;
 		}
 
-		b.position.addsi( b.velocity, dt );
+		b.position.addsi(b.velocity, dt);
 		b.orient += b.angularVelocity * dt;
-		b.setOrient( b.orient );
+		b.setOrient(b.orient);
 
-		integrateForces( b, dt );
+		integrateForces(b, dt);
+	}
+
+	public final Vec2 getGravity() {
+		return gravity;
+	}
+
+	public final void setGravity(Vec2 gravity) {
+		this.gravity = gravity;
+	}
+
+	public final SceneGrid getGrid() {
+		return grid;
 	}
 
 }

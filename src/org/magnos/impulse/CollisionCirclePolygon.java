@@ -41,12 +41,12 @@ public class CollisionCirclePolygon implements CollisionCallback
 
 		// Find edge with minimum penetration
 		// Exact concept as using support points in Polygon vs Polygon
-		float separation = -Float.MAX_VALUE;
+		double separation = -Float.MAX_VALUE;
 		int faceNormal = 0;
 		for (int i = 0; i < B.vertexCount; ++i)
 		{
 			// real s = Dot( B->m_normals[i], center - B->m_vertices[i] );
-			float s = Vec2.dot( B.normals[i], center.sub( B.vertices[i] ) );
+			double s = Vec2.dot( B.normals[i], center.sub( B.vertices[i] ) );
 
 			if (s > A.radius)
 			{
@@ -84,8 +84,8 @@ public class CollisionCirclePolygon implements CollisionCallback
 		// real dot1 = Dot( center - v1, v2 - v1 );
 		// real dot2 = Dot( center - v2, v1 - v2 );
 		// m->penetration = A->radius - separation;
-		float dot1 = Vec2.dot( center.sub( v1 ), v2.sub( v1 ) );
-		float dot2 = Vec2.dot( center.sub( v2 ), v1.sub( v2 ) );
+		double dot1 = Vec2.dot( center.sub( v1 ), v2.sub( v1 ) );
+		double dot2 = Vec2.dot( center.sub( v2 ), v1.sub( v2 ) );
 		m.penetration = A.radius - separation;
 
 		// Closest to v1

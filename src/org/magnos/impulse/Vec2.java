@@ -24,13 +24,13 @@ package org.magnos.impulse;
 public class Vec2
 {
 
-	public float x, y;
+	public double x, y;
 
 	public Vec2()
 	{
 	}
 
-	public Vec2( float x, float y )
+	public Vec2( double x, double y )
 	{
 		set( x, y );
 	}
@@ -40,7 +40,7 @@ public class Vec2
 		set( v );
 	}
 
-	public void set( float x, float y )
+	public void set( double x, double y )
 	{
 		this.x = x;
 		this.y = y;
@@ -82,7 +82,7 @@ public class Vec2
 	/**
 	 * Multiplies this vector by s and returns this.
 	 */
-	public Vec2 muli( float s )
+	public Vec2 muli( double s )
 	{
 		return mul( s, this );
 	}
@@ -90,7 +90,7 @@ public class Vec2
 	/**
 	 * Sets out to this vector multiplied by s and returns out.
 	 */
-	public Vec2 mul( float s, Vec2 out )
+	public Vec2 mul( double s, Vec2 out )
 	{
 		out.x = s * x;
 		out.y = s * y;
@@ -100,7 +100,7 @@ public class Vec2
 	/**
 	 * Returns a new vector that is a multiplication of this vector and s.
 	 */
-	public Vec2 mul( float s )
+	public Vec2 mul( double s )
 	{
 		return mul( s, new Vec2() );
 	}
@@ -108,7 +108,7 @@ public class Vec2
 	/**
 	 * Divides this vector by s and returns this.
 	 */
-	public Vec2 divi( float s )
+	public Vec2 divi( double s )
 	{
 		return div( s, this );
 	}
@@ -116,7 +116,7 @@ public class Vec2
 	/**
 	 * Sets out to the division of this vector and s and returns out.
 	 */
-	public Vec2 div( float s, Vec2 out )
+	public Vec2 div( double s, Vec2 out )
 	{
 		out.x = x / s;
 		out.y = y / s;
@@ -126,7 +126,7 @@ public class Vec2
 	/**
 	 * Returns a new vector that is a division between this vector and s.
 	 */
-	public Vec2 div( float s )
+	public Vec2 div( double s )
 	{
 		return div( s, new Vec2() );
 	}
@@ -134,7 +134,7 @@ public class Vec2
 	/**
 	 * Adds s to this vector and returns this. 
 	 */
-	public Vec2 addi( float s )
+	public Vec2 addi( double s )
 	{
 		return add( s, this );
 	}
@@ -142,7 +142,7 @@ public class Vec2
 	/**
 	 * Sets out to the sum of this vector and s and returns out.
 	 */
-	public Vec2 add( float s, Vec2 out )
+	public Vec2 add( double s, Vec2 out )
 	{
 		out.x = x + s;
 		out.y = y + s;
@@ -152,7 +152,7 @@ public class Vec2
 	/**
 	 * Returns a new vector that is the sum between this vector and s.
 	 */
-	public Vec2 add( float s )
+	public Vec2 add( double s )
 	{
 		return add( s, new Vec2() );
 	}
@@ -238,7 +238,7 @@ public class Vec2
 	/**
 	 * Adds v * s to this vector and returns this.
 	 */
-	public Vec2 addsi( Vec2 v, float s )
+	public Vec2 addsi( Vec2 v, double s )
 	{
 		return adds( v, s, this );
 	}
@@ -246,7 +246,7 @@ public class Vec2
 	/**
 	 * Sets out to the addition of this vector and v * s and returns out.
 	 */
-	public Vec2 adds( Vec2 v, float s, Vec2 out )
+	public Vec2 adds( Vec2 v, double s, Vec2 out )
 	{
 		out.x = x + v.x * s;
 		out.y = y + v.y * s;
@@ -256,7 +256,7 @@ public class Vec2
 	/**
 	 * Returns a new vector that is the addition of this vector and v * s.
 	 */
-	public Vec2 adds( Vec2 v, float s )
+	public Vec2 adds( Vec2 v, double s )
 	{
 		return adds( v, s, new Vec2() );
 	}
@@ -290,7 +290,7 @@ public class Vec2
 	/**
 	 * Returns the squared length of this vector.
 	 */
-	public float lengthSq()
+	public double lengthSq()
 	{
 		return x * x + y * y;
 	}
@@ -298,21 +298,21 @@ public class Vec2
 	/**
 	 * Returns the length of this vector.
 	 */
-	public float length()
+	public double length()
 	{
-		return (float)StrictMath.sqrt( x * x + y * y );
+		return StrictMath.sqrt( x * x + y * y );
 	}
 
 	/**
 	 * Rotates this vector by the given radians.
 	 */
-	public void rotate( float radians )
+	public void rotate( double radians )
 	{
-		float c = (float)StrictMath.cos( radians );
-		float s = (float)StrictMath.sin( radians );
+		double c = StrictMath.cos( radians );
+		double s = StrictMath.sin( radians );
 
-		float xp = x * c - y * s;
-		float yp = x * s + y * c;
+		double xp = x * c - y * s;
+		double yp = x * s + y * c;
 
 		x = xp;
 		y = yp;
@@ -321,16 +321,17 @@ public class Vec2
 	/**
 	 * Normalizes this vector, making it a unit vector. A unit vector has a length of 1.0.
 	 */
-	public void normalize()
+	public Vec2 normalize()
 	{
-		float lenSq = lengthSq();
+		double lenSq = lengthSq();
 
 		if (lenSq > ImpulseMath.EPSILON_SQ)
 		{
-			float invLen = 1.0f / (float)StrictMath.sqrt( lenSq );
+			double invLen = 1.0f / StrictMath.sqrt( lenSq );
 			x *= invLen;
 			y *= invLen;
 		}
+		return this;
 	}
 
 	/**
@@ -352,7 +353,7 @@ public class Vec2
 	/**
 	 * Returns the dot product between this vector and v.
 	 */
-	public float dot( Vec2 v )
+	public double dot( Vec2 v )
 	{
 		return dot( this, v );
 	}
@@ -360,7 +361,7 @@ public class Vec2
 	/**
 	 * Returns the squared distance between this vector and v.
 	 */
-	public float distanceSq( Vec2 v )
+	public double distanceSq( Vec2 v )
 	{
 		return distanceSq( this, v );
 	}
@@ -368,7 +369,7 @@ public class Vec2
 	/**
 	 * Returns the distance between this vector and v.
 	 */
-	public float distance( Vec2 v )
+	public double distance( Vec2 v )
 	{
 		return distance( this, v );
 	}
@@ -376,7 +377,7 @@ public class Vec2
 	/**
 	 * Sets this vector to the cross between v and a and returns this.
 	 */
-	public Vec2 cross( Vec2 v, float a )
+	public Vec2 cross( Vec2 v, double a )
 	{
 		return cross( v, a, this );
 	}
@@ -384,7 +385,7 @@ public class Vec2
 	/**
 	 * Sets this vector to the cross between a and v and returns this.
 	 */
-	public Vec2 cross( float a, Vec2 v )
+	public Vec2 cross( double a, Vec2 v )
 	{
 		return cross( a, v, this );
 	}
@@ -394,61 +395,61 @@ public class Vec2
 	 * the length of the cross product if this vector were 3d. This can also
 	 * indicate which way v is facing relative to this vector.
 	 */
-	public float cross( Vec2 v )
+	public double cross( Vec2 v )
 	{
 		return cross( this, v );
 	}
 
 	public static Vec2 min( Vec2 a, Vec2 b, Vec2 out )
 	{
-		out.x = (float)StrictMath.min( a.x, b.x );
-		out.y = (float)StrictMath.min( a.y, b.y );
+		out.x = StrictMath.min( a.x, b.x );
+		out.y = StrictMath.min( a.y, b.y );
 		return out;
 	}
 
 	public static Vec2 max( Vec2 a, Vec2 b, Vec2 out )
 	{
-		out.x = (float)StrictMath.max( a.x, b.x );
-		out.y = (float)StrictMath.max( a.y, b.y );
+		out.x = StrictMath.max( a.x, b.x );
+		out.y = StrictMath.max( a.y, b.y );
 		return out;
 	}
 
-	public static float dot( Vec2 a, Vec2 b )
+	public static double dot( Vec2 a, Vec2 b )
 	{
 		return a.x * b.x + a.y * b.y;
 	}
 
-	public static float distanceSq( Vec2 a, Vec2 b )
+	public static double distanceSq( Vec2 a, Vec2 b )
 	{
-		float dx = a.x - b.x;
-		float dy = a.y - b.y;
+		double dx = a.x - b.x;
+		double dy = a.y - b.y;
 
 		return dx * dx + dy * dy;
 	}
 
-	public static float distance( Vec2 a, Vec2 b )
+	public static double distance( Vec2 a, Vec2 b )
 	{
-		float dx = a.x - b.x;
-		float dy = a.y - b.y;
+		double dx = a.x - b.x;
+		double dy = a.y - b.y;
 
-		return (float)StrictMath.sqrt( dx * dx + dy * dy );
+		return StrictMath.sqrt( dx * dx + dy * dy );
 	}
 
-	public static Vec2 cross( Vec2 v, float a, Vec2 out )
+	public static Vec2 cross( Vec2 v, double a, Vec2 out )
 	{
 		out.x = v.y * a;
 		out.y = v.x * -a;
 		return out;
 	}
 
-	public static Vec2 cross( float a, Vec2 v, Vec2 out )
+	public static Vec2 cross( double a, Vec2 v, Vec2 out )
 	{
 		out.x = v.y * -a;
 		out.y = v.x * a;
 		return out;
 	}
 
-	public static float cross( Vec2 a, Vec2 b )
+	public static double cross( Vec2 a, Vec2 b )
 	{
 		return a.x * b.y - a.y * b.x;
 	}
@@ -466,6 +467,11 @@ public class Vec2
 		}
 
 		return array;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("%.3f, %.3f", x, y);
 	}
 
 }
