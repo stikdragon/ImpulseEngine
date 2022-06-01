@@ -241,8 +241,8 @@ public class Polygon extends Shape {
 		for (int i = 0; i < vertexCount; ++i) {
 			box.x0 = Math.min(box.x0, vertices[i].x);
 			box.y0 = Math.min(box.y0, vertices[i].y);
-			box.x1 = Math.max(box.x0, vertices[i].x);
-			box.y1 = Math.max(box.y0, vertices[i].y);
+			box.x1 = Math.max(box.x1, vertices[i].x);
+			box.y1 = Math.max(box.y1, vertices[i].y);
 		}
 	}
 
