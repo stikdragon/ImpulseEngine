@@ -1,7 +1,16 @@
 ![Stable](http://i4.photobucket.com/albums/y123/Freaklotr4/stage_stable.png)
 
-Java port of Impulse Engine
-Created by Philip Diffenderfer
+<p>Java port of Impulse Engine</p>
+<p>Created by Philip Diffenderfer</p>
+<p>Modified by Stik</p>
+
+<b>Notable Changes</b>
+<ul><li>Reduced the number of new instances being created by heavy use of globals.  This makes it even more thread-unsafe</li>
+  <li>Added a simple grid based partitioning system to improve performance where you have lots of slow moving objects relative to the overall size of your world</li>
+  <li>Allowed gravity to be disabled</li>
+  </ul>
+
+<b>Original readme:</b>
 
 The Impulse Engine is a small 2D physics library written in Java and has no third-party-library dependencies. 
 
