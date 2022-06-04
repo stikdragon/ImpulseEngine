@@ -120,7 +120,7 @@ public class ImpulseScene<T extends Body> {
 
 		// Initialize collision
 		contacts.forEach(Manifold::initialize);
-		
+
 		// Solve collisions
 		for (int j = 0; j < iterations; ++j)
 			contacts.forEach(Manifold::applyImpulse);
@@ -184,6 +184,16 @@ public class ImpulseScene<T extends Body> {
 		}
 		b.sequence = ++sequence;
 		bodies.add(b);
+	}
+
+	public void remove(T b) {
+		if (grid != null) {
+			GridCell c = grid.getCell(b.position);
+			if (c != null)
+				c.bodies.remove(b);
+		}
+		bodies.remove(b);
+
 	}
 
 	public void clear() {
